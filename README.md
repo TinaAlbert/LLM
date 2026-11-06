@@ -30,4 +30,4 @@ V1只覆盖自建模拟差旅v1、合成账户、选定本人单行程。A/C初�
 - [原始需求](docs/需求定义.md)、[开发指导](docs/开发指导.md)、[原场景与研究验收](docs/场景与验收设计.md)
 - [等待推进修正与真实失败记录](docs/42等待推进协议修正与续验.md)、[Prompt索引](prompts/README.md)
 
-这是GitHub作品与求职展示项目。用户已批准新建公开`TinaAlbert/LLM`并上传；本地脱敏与必要定向检查已完成，创建/提交/上传当前仍待执行，见[发布与隐私说明](docs/GitHub发布与隐私说明.md)。后置研究需用户重新排期，不自动启动。
+这是GitHub作品与求职展示项目，已按用户授权发布到公开仓库[TinaAlbert/LLM](https://github.com/TinaAlbert/LLM)。内容发布版本[`94ab752`](https://github.com/TinaAlbert/LLM/commit/94ab752ddfc0fb6ec2f2c333de97bf820ce4ced6)的396个文件已全部远端回读匹配，脱敏范围和复现边界见[发布与隐私说明](docs/GitHub发布与隐私说明.md)。后置研究需用户重新排期，不自动启动。
