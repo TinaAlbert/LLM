@@ -1,0 +1,6 @@
+# Minimal runtime + D1-01 integration checks; official stable PyPI releases.
+fastapi==0.141.1
+uvicorn==0.54.0
+psycopg[binary]==3.3.6
+pytest==9.1.1
+httpx==0.28.1

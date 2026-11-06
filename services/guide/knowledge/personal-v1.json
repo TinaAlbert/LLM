@@ -1,0 +1,113 @@
+{
+  "product_id": "travel-lab",
+  "product_version": "v1",
+  "knowledge_version": "personal-guide-1",
+  "revision": 2,
+  "source_kind": "documented",
+  "source": "product-published:travel-lab/v1/personal-guide",
+  "disclosure_scope": "public-personal-procedure",
+  "supported_scope": "本人单行程个人预订；模拟业务；由用户在原网页操作。",
+  "nodes": [
+    {
+      "id": "knowledge:trip.open",
+      "revision": 1,
+      "step_id": "trip.open",
+      "anchor_id": "trip.open",
+      "purpose": "在我的行程中选择并打开本人目标行程。",
+      "preconditions": [
+        "使用自己的当前登录会话。"
+      ],
+      "expected_change": "行程详情显示选定对象和当前修订。",
+      "recovery": "未选择对象时先打开本人行程；不可访问的对象不提供详情。"
+    },
+    {
+      "id": "knowledge:profile.bind",
+      "revision": 1,
+      "step_id": "profile.bind",
+      "anchor_id": "profile.bind",
+      "purpose": "在本人的付款资料中选择本人允许的虚拟个人付款来源并绑定。",
+      "preconditions": [
+        "付款尚未受理。",
+        "来源属于本人且当前可用。"
+      ],
+      "expected_change": "资料修订变化；尚未付款的旧报价和锁价失效。",
+      "recovery": "当前资格未知时先核对资料可用状态；处理中或待确认的付款期间不换资料。"
+    },
+    {
+      "id": "knowledge:quote.request",
+      "revision": 1,
+      "step_id": "quote.request",
+      "anchor_id": "quote.request",
+      "purpose": "在行程详情获取暂估报价；绑定前没有可确认金额。",
+      "preconditions": [
+        "已绑定当前可用的个人付款资料。",
+        "行程对应的航段和日期当前可用。"
+      ],
+      "expected_change": "出现带期限的暂估报价；未预留库存或确认最终金额。",
+      "recovery": "资料、行程修订或报价期限变化后，先重新观察当前状态。"
+    },
+    {
+      "id": "knowledge:quote.lock",
+      "revision": 1,
+      "step_id": "quote.lock",
+      "anchor_id": "quote.lock",
+      "purpose": "确认当前有效暂估报价后锁定最终金额。",
+      "preconditions": [
+        "报价属于当前行程修订且仍有效。",
+        "当前业务服务允许锁价并有可用资源。"
+      ],
+      "expected_change": "业务服务生成有期限的冻结金额并占用资源。",
+      "recovery": "旧报价、配置或资料变化后不能继续沿用旧锁价建议。"
+    },
+    {
+      "id": "knowledge:payment.confirm",
+      "revision": 2,
+      "step_id": "payment.confirm",
+      "anchor_id": "payment.confirm",
+      "purpose": "在付款与出票中核对当前冻结金额后由用户决定是否模拟付款。",
+      "preconditions": [
+        "当前锁价有效且对应当前行程修订。",
+        "付款资料和航段条件仍成立。",
+        "没有正在处理、待确认或已成功的付款。"
+      ],
+      "expected_change": "建立原付款操作，可能处理中、待确认、成功或失败；成功仍不等于出票。",
+      "recovery": "付款响应未确认时先查原付款；已付无票时不再次付款。"
+    },
+    {
+      "id": "knowledge:booking.refresh",
+      "revision": 1,
+      "step_id": "booking.refresh",
+      "anchor_id": "booking.refresh",
+      "purpose": "刷新当前状态，查看原付款和出票进度。",
+      "preconditions": [
+        "当前会话有权查看选定行程。"
+      ],
+      "expected_change": "显示业务当前已提交的付款、出票任务和独立票据状态。",
+      "recovery": "已付款但任务待处理或失败时目标尚未完成；没有自动退款、重新付款或用户任务控制入口。"
+    },
+    {
+      "id": "knowledge:payment.reconcile",
+      "revision": 1,
+      "step_id": "payment.reconcile",
+      "anchor_id": "payment.reconcile",
+      "purpose": "付款结果未知时对账原付款，确认已有操作结果。",
+      "preconditions": [
+        "选定行程已有本人可见的原付款。"
+      ],
+      "expected_change": "业务服务查询并收敛原付款结果，不创建新扣款。",
+      "recovery": "超时不能作为付款失败证据；未知仍保留资源保护。"
+    },
+    {
+      "id": "knowledge:trip.revise",
+      "revision": 1,
+      "step_id": "trip.revise",
+      "anchor_id": "trip.revise",
+      "purpose": "需要修改出行条件时在尚未付款的行程中保存修订。",
+      "preconditions": [
+        "行程仍为草稿且未处于付款保护。"
+      ],
+      "expected_change": "行程修订增加，依赖旧修订的报价和锁价失效。",
+      "recovery": "先重新观察修改后状态；正在付款、已付或出票状态不提供本入口修改。"
+    }
+  ]
+}

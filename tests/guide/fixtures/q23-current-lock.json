@@ -1,0 +1,141 @@
+{
+  "source": ".local/d3-32/live-1/model-01.json",
+  "candidate": {
+    "content": "{\"v\":1,\"action\":{\"kind\":\"lock\",\"target\":\"trip_1\",\"entry\":\"booking.lock\",\"params\":{}},\"reason\":\"两行程均无锁价，同券仅归首个合格锁价；trip_1基础金额更高、优惠额达券上限200，先锁trip_1确定券归属。\",\"conditions\":\"trip_1报价effective_status为active且valid，trip_1尚未锁价，shared_coupon状态available。\",\"check\":\"核对trip_1锁价成功、frozen金额与券归属trip_1生效。\"}",
+    "tool_calls": []
+  },
+  "candidate_content_sha256": "f25169a1a0e4423be26c77a15810c383560c19900bcde391b91430f778663ef1",
+  "current_state": {
+    "contract_version": "assistant-shared-1",
+    "product_id": "travel-lab",
+    "product_version": "v1",
+    "rule_version": "booking-v1",
+    "policy_version": "subject-assignment-v1",
+    "feature_config_version": "shared-coupon-1",
+    "source_kind": "observed",
+    "environment": "local-demo",
+    "simulated_identity": "synthetic_personal",
+    "disclosure_scope": "current-session",
+    "selected_trip": true,
+    "selected_ref": "trip_1",
+    "delegation": "two_explicit_owned_trips",
+    "delegated_trips": [
+      {
+        "ref": "trip_1",
+        "data": {
+          "trip": {
+            "ref": "trip",
+            "revision": 1,
+            "flight_id": "DEMO-LARGE",
+            "travel_date": "2026-10-01",
+            "passengers": 1,
+            "status": "draft"
+          },
+          "quote": {
+            "ref": "quote",
+            "trip_revision": 1,
+            "effective_status": "active",
+            "valid": true,
+            "expires_at": "2026-09-27T00:05:00+00:00",
+            "price_basis": "estimate",
+            "coupon_allocation": "estimate",
+            "amount_display": "800.00 模拟元",
+            "base_amount_display": "1000.00 模拟元",
+            "coupon_discount_display": "200.00 模拟元"
+          },
+          "lock": null,
+          "payment": null,
+          "ticket_task": null,
+          "ticket": null
+        },
+        "unknowns": []
+      },
+      {
+        "ref": "trip_2",
+        "data": {
+          "trip": {
+            "ref": "trip",
+            "revision": 1,
+            "flight_id": "DEMO-SMALL",
+            "travel_date": "2026-10-01",
+            "passengers": 1,
+            "status": "draft"
+          },
+          "quote": {
+            "ref": "quote",
+            "trip_revision": 1,
+            "effective_status": "active",
+            "valid": true,
+            "expires_at": "2026-09-27T00:05:00+00:00",
+            "price_basis": "estimate",
+            "coupon_allocation": "estimate",
+            "amount_display": "480.00 模拟元",
+            "base_amount_display": "600.00 模拟元",
+            "coupon_discount_display": "120.00 模拟元"
+          },
+          "lock": null,
+          "payment": null,
+          "ticket_task": null,
+          "ticket": null
+        },
+        "unknowns": []
+      }
+    ],
+    "shared_coupon": {
+      "ref": "shared_coupon",
+      "status": "available",
+      "percent": 20,
+      "attribution": "none",
+      "trip_ref": null,
+      "cap_display": "200.00 模拟元"
+    },
+    "state_versions": {
+      "trips": {
+        "trip_1": 1,
+        "trip_2": 1
+      },
+      "payment_profile": 1
+    },
+    "business_time": "2026-09-27T00:00:00+00:00",
+    "assumptions": [
+      "synthetic_demo_account",
+      "simulated_business_services"
+    ],
+    "unknowns": [
+      "unexecuted_order_outcomes"
+    ],
+    "documented": {
+      "source_kind": "documented",
+      "source": "product-published:travel-lab/v1/shared-coupon",
+      "revision": 2,
+      "text": "本人两个明确委托行程可能共用一张个人券。预报价中的优惠只是估算，不占券；第一个合格锁价原子确定券归属和最终应付额，另一个锁价需重新核对金额。券percent表示减免百分比，cap是最高减免额。锁价占用券，付款处理中或结果未知时保护原占用，付款成功消耗券；未支付且允许取消的锁价释放后才能重新竞争，仍须重新核对库存和期限。已消耗券不能通过取消恢复，付款成功仍不等于取得有效票据。同一张券不可拆分给两单，最高减免额不是余额；首个合格锁价确定整张券归属。另一单须重新核价，不能直接相加两份各自含券优惠的预报价；重新操作仍须核对资格。"
+    },
+    "observed_at": "2026-10-21T10:58:48.565967+00:00",
+    "valid_until": "2026-10-21T10:59:18.565967+00:00",
+    "presentation_contract": "assistant-money-display-2",
+    "time_contract": {
+      "business_clock": "business_time",
+      "capture_clock": "observed_at",
+      "observation_expiry": "valid_until",
+      "price_validity": "each_price.valid_and_effective_status"
+    }
+  },
+  "current_observation": {
+    "page": "booking",
+    "title": "预订与票据",
+    "items": [
+      "报价",
+      "锁价",
+      "付款",
+      "票据"
+    ],
+    "product_version": "v1",
+    "source_kind": "client_observed"
+  },
+  "allowed_pages": [
+    "welcome",
+    "profile",
+    "trips",
+    "booking"
+  ]
+}

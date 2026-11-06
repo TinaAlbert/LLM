@@ -1,0 +1,67 @@
+# Local secrets; examples must contain placeholders only.
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+
+# Private machine/credential stores.
+/.aws/
+/.codex/
+/.agents/
+.ssh/
+.npmrc
+.pypirc
+.netrc
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# Python environments and caches.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+.coverage.*
+htmlcov/
+
+# Web dependencies and generated outputs.
+*.tsbuildinfo
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+playwright-report/
+test-results/
+
+# Local runtime data and large experiment outputs.
+.local/
+.cache/
+data/local/
+data/raw/
+/models/
+/checkpoints/
+/outputs/
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.gguf
+*.sqlite
+*.sqlite3
+*.log
+
+# Machine/editor files.
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

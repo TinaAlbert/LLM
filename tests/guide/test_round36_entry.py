@@ -1,0 +1,121 @@
+"""Q27仅用临时35笔账本与MockTransport；不读取真实许可、不发送模型。"""
+import asyncio
+from decimal import Decimal
+import json
+import time
+import httpx
+import pytest
+from scripts import round29_task as task
+from services.guide.budget import BudgetUnavailable
+from services.guide.experiment import approval_values
+from services.guide.knowledge import fingerprint
+from services.guide.model import DeepSeekModelAdapter, ModelConfig, ModelUnavailable, _today
+from services.guide.task_budget import (TaskPermitBinding, validated_q19_permit, create_q19_grant,
+    stop_q19_batch, confirm_q19_round, finish_q19_task)
+from test_round35_entry import (ready as q26_ready, permit as q26_permit, q25_ready, q25_permit,
+    q24_ready, q23_ready, q22_ready, q21_ready, q20_ready, q19_ready)
+from test_q18_budget import settled
+from test_q16_budget import case, response
+
+
+@pytest.fixture
+def ready(q26_ready):
+    ledger, now, specs, old, *_ = q26_ready
+    settled(ledger, ledger.reserve(experiment=True, q26_permit=q26_permit(q26_ready)))
+    stop_q19_batch(ledger, 'formal_delivery_failed', batch='Q26')
+    now[0] += 61
+    old = {p: p.read_bytes() for p in (*old, ledger.q26_path, ledger.q26_stop_path)}
+    specs = [dict(s, task_ref='q27-' + s['task_ref']) for s in specs]
+    prefix = ledger.receipt_snapshot()
+    grant = create_q19_grant(ledger, specs, 'f' * 64, batch='Q27')
+    return ledger, now, specs, old, prefix, grant
+
+
+def permit(ready, actual_hash='a' * 64, task_index=1, round_index=1):
+    ledger, _, specs, *_ = ready
+    spec = specs[task_index - 1]
+    binding = TaskPermitBinding(spec['task_ref'], task_index, round_index, 1, 'b' * 64, actual_hash, spec['scope_hash'])
+    return validated_q19_permit(binding, ledger.q27_path, batch='Q27')
+
+
+@pytest.mark.parametrize('unknown_usage', [False, True])
+def test_adapter_binds_35_prefix_22_sidecars_and_unknown_usage_stops(ready, tmp_path, unknown_usage):
+    ledger, _, _, old, prefix, grant = ready
+    assert (grant['prefix_requests'], len(grant['legacy_sha256'])) == (35, 22)
+    assert (grant['package'], grant['request_ceiling'], grant['reserved_ceiling_cny']) == ('Q27-P36-current-result', 15, '0.480')
+    value = case('合成本步返回核对')
+    approval = tmp_path / 'approval.json'
+    approval.write_text(json.dumps(approval_values(_today())), encoding='utf-8')
+    calls = []
+    def handler(request):
+        calls.append(request)
+        result = response('synthetic-q27')
+        if unknown_usage:
+            result.pop('usage')
+        return httpx.Response(200, json=result)
+    adapter = DeepSeekModelAdapter(ledger, config=ModelConfig('synthetic-test-key-not-an-account', 'synthetic', _today(), 'user_reported', 'test', Decimal(0)),
+        input_validator=lambda x: x, transport=httpx.MockTransport(handler), q27_grant_path=ledger.q27_path,
+        q27_authorizer=lambda x: permit(ready, fingerprint(x)), protocol_report_dir=tmp_path / 'd3-36/protocol')
+    async def generate():
+        return await adapter.generate_experiment(value, time.monotonic() + 5, approval_path=approval)
+    if unknown_usage:
+        with pytest.raises(ModelUnavailable):
+            asyncio.run(generate())
+        assert ledger.q27_stop_path.exists() and ledger.summary()['unresolved_requests'] == 1
+        with pytest.raises(ModelUnavailable):
+            asyncio.run(generate())
+    else:
+        result = asyncio.run(generate())
+        assert ledger.receipt_snapshot()[35]['request_id'] == result.reservation_id
+        assert not ledger.q27_stop_path.exists()
+    assert len(calls) == 1 and ledger.receipt_snapshot()[:35] == prefix
+    assert all(p.read_bytes() == raw for p, raw in old.items())
+
+
+def test_old_q26_decision_cannot_initialize_q27(tmp_path, monkeypatch):
+    import services.guide.budget as budget
+    for name in ('ROUND', 'PACKAGE', 'LOCAL', 'ENTRY'):
+        monkeypatch.setattr(task, name, getattr(task, name))
+    task.configure_round36()
+    assert task.shared_prompt_version() == 'assistant-10'
+    monkeypatch.setattr(task, 'checked_review', lambda path: {})
+    monkeypatch.setattr(budget, 'BudgetLedger', lambda *a: pytest.fail('reject old decision before ledger'))
+    manifest = tmp_path / 'review-manifest.json'
+    manifest.write_text('{}')
+    decision = tmp_path / 'decision.json'
+    decision.write_text(json.dumps({'package': 'Q26-P35-explanation-following', 'approved': True,
+        'source_kind': 'explicit_user_reply', 'source_reply': '批准Q26', 'review_manifest_sha256': task.sha(manifest)}), encoding='utf-8')
+    with pytest.raises(RuntimeError, match='explicit_matching_decision'):
+        task.init_grant(tmp_path, decision)
+
+
+def test_old_permit_and_changed_prior_sidecar_cannot_reserve(ready):
+    ledger, _, _, _, prefix, _ = ready
+    with pytest.raises(BudgetUnavailable, match='q27_scope_required'):
+        ledger.reserve(experiment=True)
+    old_permit = validated_q19_permit(permit(ready).binding, ledger.q26_path, batch='Q26')
+    with pytest.raises(BudgetUnavailable, match='q26_batch_stopped'):
+        ledger.reserve(experiment=True, q26_permit=old_permit)
+    ledger.q26_stop_path.write_bytes(ledger.q26_stop_path.read_bytes() + b' ')
+    with pytest.raises(BudgetUnavailable, match='q27_grant_invalid'):
+        ledger.reserve(experiment=True, q27_permit=permit(ready))
+    assert ledger.receipt_snapshot() == prefix and ledger.q27_stop_path.exists()
+
+
+def test_fifteenth_new_request_is_last_at_original_first_phase_limit(ready):
+    ledger, now, specs, old, prefix, _ = ready
+    for task_index, rounds in ((1, 9), (2, 6)):
+        for round_index in range(1, rounds + 1):
+            now[0] += 11
+            settled(ledger, ledger.reserve(experiment=True, q27_permit=permit(ready, task_index=task_index, round_index=round_index)))
+            confirm_q19_round(ledger, specs[task_index - 1]['task_ref'], round_index, batch='Q27')
+        if task_index == 1:
+            finish_q19_task(ledger, specs[0]['task_ref'], batch='Q27')
+    assert ledger.summary()['physical_requests'] == 50
+    before = ledger.path.read_bytes()
+    now[0] += 11
+    with pytest.raises(BudgetUnavailable, match='q27_request_limit'):
+        ledger.reserve(experiment=True, q27_permit=permit(ready, task_index=2, round_index=7))
+    assert ledger.path.read_bytes() == before and ledger.receipt_snapshot()[:35] == prefix
+    assert all(p.read_bytes() == raw for p, raw in old.items())
+    assert json.loads(ledger.q27_stop_path.read_text())['reason'] == 'q27_request_limit'

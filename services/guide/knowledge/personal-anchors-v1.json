@@ -1,0 +1,42 @@
+{
+  "product_id": "travel-lab",
+  "product_version": "v1",
+  "mapping_version": "personal-anchors-1",
+  "revision": 2,
+  "source_kind": "documented",
+  "source": "product-published:travel-lab/v1/personal-anchors",
+  "anchors": {
+    "trip.open": {
+      "id": "trip.open",
+      "path": "我的行程 → 通过行程编号打开 → 本人行程 ID → 打开行程"
+    },
+    "profile.bind": {
+      "id": "profile.bind",
+      "path": "本人的付款资料 → 付款来源 → 绑定付款资料"
+    },
+    "quote.request": {
+      "id": "quote.request",
+      "path": "行程详情 → 获取暂估报价"
+    },
+    "quote.lock": {
+      "id": "quote.lock",
+      "path": "行程详情 → 确认最终锁价"
+    },
+    "payment.confirm": {
+      "id": "payment.confirm",
+      "path": "付款与出票 → 确认支付冻结金额"
+    },
+    "booking.refresh": {
+      "id": "booking.refresh",
+      "path": "刷新当前状态"
+    },
+    "payment.reconcile": {
+      "id": "payment.reconcile",
+      "path": "付款与出票 → 对账原付款"
+    },
+    "trip.revise": {
+      "id": "trip.revise",
+      "path": "修订尚未付款行程 → 保存行程修订"
+    }
+  }
+}

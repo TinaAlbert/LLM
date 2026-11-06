@@ -1,0 +1,117 @@
+{
+  "schema": "v1-final-acceptance-1",
+  "date": "2026-11-06",
+  "product": "synthetic-travel-v1",
+  "model": "deepseek-flash",
+  "revision": "DeepSeek-V4.1-Flash-1017",
+  "status": "V1_completed_research_deferred",
+  "milestones": {
+    "M1": "passed",
+    "M2": "passed",
+    "M3": "passed"
+  },
+  "A": "passed_Q35_real_lock_pay_query_end",
+  "B": "passed_Q36_real_navigate_booking_and_DOM_nonce_ACK",
+  "C": "passed_with_A_paid_pending_then_fresh_valid_ticket",
+  "D": "passed_Q36_real_unknown_unsupported",
+  "E": "passed_reused_program_identity_object_late_result_fact_counterexamples",
+  "F": "passed_original_knowledge_UI_review_publish_new_session_rollback",
+  "independent_result": {
+    "valid_ticket_count": 1,
+    "payment_count": 1,
+    "captured_minor": 110000,
+    "inventory_capacity_reserved_sold": [
+      2,
+      0,
+      1
+    ]
+  },
+  "real_attempts": {
+    "A": {
+      "attempted": 1,
+      "completed": 1
+    },
+    "B": {
+      "attempted": 2,
+      "completed": 1
+    },
+    "D": {
+      "attempted": 1,
+      "completed": 1
+    },
+    "C_is_checkpoint_in_A": true,
+    "not_a_statistical_success_rate": true
+  },
+  "Q35": "AC passed; B wrong page/missing tool rejected and permanently stopped; D not started",
+  "Q36": "2 real calls passed and completed; same business SQL; no new business write or worker event",
+  "latest_resume_calls": 2,
+  "latest_resume_accounted_cny": "0.00899592",
+  "Q35_plus_Q36_calls": 7,
+  "Q35_plus_Q36_accounted_cny": "0.03080960",
+  "ledger": {
+    "package": "DS-1007",
+    "phase": "first",
+    "physical_requests": 57,
+    "accounted_cny": "0.21431272",
+    "unresolved_cny": "0",
+    "unresolved_requests": 0
+  },
+  "provider_bill_independently_reconciled": false,
+  "validation": {
+    "latest_unique_testcases_passed": 2440,
+    "batches": [
+      {
+        "report": "overall-1106-fixed.xml",
+        "cases": 200,
+        "failed_or_error": 5
+      },
+      {
+        "report": "overall-1106-remaining.xml",
+        "cases": 2248,
+        "failed_or_error": 0
+      },
+      {
+        "report": "navigation-generation14.xml",
+        "cases": 5,
+        "failed_or_error": 0
+      },
+      {
+        "report": "q36-budget.xml",
+        "cases": 2,
+        "failed_or_error": 0
+      },
+      {
+        "report": "q36-integration.xml",
+        "cases": 20,
+        "failed_or_error": 0
+      },
+      {
+        "report": "current-runtime-fixture.xml",
+        "cases": 18,
+        "failed_or_error": 0
+      },
+      {
+        "report": "readonly-authorization-fixed.xml",
+        "cases": 17,
+        "failed_or_error": 0
+      }
+    ],
+    "scope": "full suite at Q35 revision; later changes verified with targeted checks, including latest readonly guard",
+    "frontend_build": "passed",
+    "rehearsals_are_not_AI_tasks": true
+  },
+  "ports_listening": {
+    "8000": false,
+    "5173": false,
+    "55432": false,
+    "55433": false
+  },
+  "required_V1_remaining": [],
+  "original_research": "not_accepted_deferred_not_automatically_started",
+  "evidence": {
+    "AC": ".local/v1-42/run-04",
+    "BD": ".local/v1-42/run-05",
+    "report": "docs/42V1最终验收与交付.md",
+    "demo": "docs/V1演示与复现.md"
+  }
+}
